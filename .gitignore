@@ -1,11 +1,15 @@
+private
+private/credentials.json
+t/token-1.json
+
 .DS_STORE
 
-environment.py
+ResolutionManager/environment.py
 
 # Created by .ignore support plugin (hsz.mobi)
 .idea
 
-Notebooks/.ipynb_checkpoints
+ResolutionManager/Notebooks/.ipynb_checkpoints
 
 ### Python template
 # Byte-compiled / optimized / DLL files

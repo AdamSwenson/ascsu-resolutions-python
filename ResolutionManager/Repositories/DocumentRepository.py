@@ -55,40 +55,37 @@ class DocumentRepository(object):
             print(err)
 
 
-    def create_file_in_folder(self, folderId, filename):
-        def upload_to_folder(folder_id):
-            """Upload a file to the specified folder and prints file ID, folder ID
-            Args: Id of the folder
-            Returns: ID of the file uploaded
+    def create_file_in_folder(self, folder_id, filename):
+        """Upload a file to the specified folder and prints file ID, folder ID
+        Args: Id of the folder
+        Returns: ID of the file uploaded
+        """
 
-            Load pre-authorized user credentials from the environment.
-            TODO(developer) - See https://developers.google.com/identity
-            for guides on implementing OAuth2 for the application.
-            """
-            creds, _ = google.auth.default()
+        try:
+            file_metadata = {
+                'name': filename,
+                'parents': [folder_id]
+            }
+            # media = MediaFileUpload('download.jpeg',
+            #                         mimetype='image/jpeg', resumable=True)
+            # pylint: disable=maybe-no-member
+            file = self.service.files().create(body=file_metadata, fields='id').execute()
+            # file = self.service.files().create(body=file_metadata, media_body=media,
+            #                               fields='id').execute()
+            print(F'File ID: "{file.get("id")}".')
+            return file.get('id')
 
-            try:
-                # create drive api client
-                service = build('drive', 'v3', credentials=creds)
+        except HttpError as error:
+            print(F'An error occurred: {error}')
+            return None
 
-                file_metadata = {
-                    'name': 'photo.jpg',
-                    'parents': [folder_id]
-                }
-                media = MediaFileUpload('download.jpeg',
-                                        mimetype='image/jpeg', resumable=True)
-                # pylint: disable=maybe-no-member
-                file = service.files().create(body=file_metadata, media_body=media,
-                                              fields='id').execute()
-                print(F'File ID: "{file.get("id")}".')
-                return file.get('id')
-
-            except HttpError as error:
-                print(F'An error occurred: {error}')
-                return None
-
-        if __name__ == '__main__':
-            upload_to_folder(folder_id='1s0oKEZZXjImNngxHGnY0xed6Mw-tvspu')
+    def get_document(self, document_id):
+        """Returns the object for the document"""
+        try:
+            document = self.service.documents().get(documentId=document_id).execute()
+            return document
+        except HttpError as err:
+            print(err)
 
 
 if __name__ == '__main__':

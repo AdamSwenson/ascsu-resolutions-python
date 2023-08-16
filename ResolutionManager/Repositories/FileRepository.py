@@ -44,15 +44,29 @@ class FileRepository(object):
     def list_folders(self):
         pass
 
-    def list_files(self):
+    def list_files(self, folder_id=None, page_size=10):
         """Shows basic usage of the Drive v3 API.
         Prints the names and ids of the first 10 files the user has access to.
+
+        If folder_id is not None, lists the files from that folder
+
+        Returns : List of result objects
         """
         try:
             # Call the Drive v3 API
+            # results = self.service.files().list(
+            #     pageSize=page_size, fields="nextPageToken, files(id, name)").execute()
+            #
             results = self.service.files().list(
-                pageSize=10, fields="nextPageToken, files(id, name)").execute()
+                pageSize=page_size,
+                fields="nextPageToken, files(id, name, mimeType, parents)",
+            ).execute()
+            # print(results)
+
             items = results.get('files', [])
+
+            if folder_id is not None:
+                items = [f for f in items if folder_id in f['parents']]
 
             if not items:
                 print('No files found.')
@@ -60,22 +74,24 @@ class FileRepository(object):
             print('Files:')
             for item in items:
                 print(u'{0} ({1})'.format(item['name'], item['id']))
+
+            return items
+
         except HttpError as error:
             # TODO(developer) - Handle errors from drive API.
             print(f'An error occurred: {error}')
 
 
 
-    def copy_file(self, document_id):
-        copy_title = 'Copy Title'
+    def copy_file(self, document_id, copy_name):
         body = {
-            'name': copy_title
+            'name': copy_name
         }
         try:
             drive_response = self.service.files().copy(
                 fileId=document_id, body=body).execute()
             document_copy_id = drive_response.get('id')
-            print(f"Copied document. New doc id : {document_copy_id}")
+            print(f"\n Copied document \n    New doc id : {document_copy_id} \n    New doc name : {copy_name} \n")
             return document_copy_id;
         except HttpError as error:
             # TODO(developer) - Handle errors from drive API.

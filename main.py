@@ -1,15 +1,12 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 from ResolutionManager import environment as env
 from ResolutionManager.API.CredentialsManager import CredentialsManager
 from ResolutionManager.Repositories.DocumentRepository import DocumentRepository
 from ResolutionManager.Repositories.FileRepository import FileRepository
-
+from ResolutionManager.Repositories.ResolutionTemplateRespository import ResolutionTemplateRepository
 import ResolutionManager.executables.make_folders_for_plenary as make_folders
-
+import ResolutionManager.executables.copy_first_readings_for_feedback as copy_first_reads
+import ResolutionManager.executables.create_resolution_from_template as create_resolution
 # import environment as env
 
 def print_hi(name):
@@ -19,15 +16,25 @@ def print_hi(name):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    make_folders.main()
+    # make_folders.main()
+    # copy_first_reads.main()
+    create_resolution.main()
 
+    # template_repo = ResolutionTemplateRepository()
     # doc_repo = DocumentRepository()
     # file_repo = FileRepository()
+
+    # doc ='1HPBxjD6t6jPSUmtON-NW8F46LCuV3W8kLQFlzzW1KZk'
+
+    # template_repo.update_header(doc, 2222, 2023, 'FA', ['AA'])
+
+    # print(doc_repo.get_document(env.TEMPLATE_DOCUMENT_ID))
+
     #
     # doc_repo.create_file('test 7')
     # print_hi('PyCharm')
     #
-    # file_repo.list_files()
+    # print(len(file_repo.list_files(page_size=100)))
 
     # file_repo.create_folder('ascsu testing')
 

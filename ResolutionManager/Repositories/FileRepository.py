@@ -67,10 +67,44 @@ class FileRepository(object):
 
 
     def copy_file(self, document_id):
-        pass
+        copy_title = 'Copy Title'
+        body = {
+            'name': copy_title
+        }
+        try:
+            drive_response = self.service.files().copy(
+                fileId=document_id, body=body).execute()
+            document_copy_id = drive_response.get('id')
+            print(f"Copied document. New doc id : {document_copy_id}")
+            return document_copy_id;
+        except HttpError as error:
+            # TODO(developer) - Handle errors from drive API.
+            print(f'An error occurred: {error}')
 
-    def move_file(self, destination_id, document_id):
-        pass
+    def move_file_to_folder(self, file_id, folder_id):
+        """Move specified file to the specified folder.
+        Args:
+            file_id: Id of the file to move.
+            folder_id: Id of the folder
+        Print: An object containing the new parent folder and other meta data
+        Returns : Parent Ids for the file
+        """
+        try:
+            # pylint: disable=maybe-no-member
+            # Retrieve the existing parents to remove
+            file = self.service.files().get(fileId=file_id, fields='parents').execute()
+            previous_parents = ",".join(file.get('parents'))
+            # Move the file to the new folder
+            file = self.service.files().update(fileId=file_id, addParents=folder_id,
+                                          removeParents=previous_parents,
+                                          fields='id, parents').execute()
+            print(f"new parent id: {file.get('parents')}")
+            return file.get('parents')
+
+        except HttpError as error:
+            print(F'An error occurred: {error}')
+            return None
+
 
 # https://docs.google.com/document/d/document_id/edit
 # copy_title = 'Copy Title'

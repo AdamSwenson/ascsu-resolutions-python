@@ -15,3 +15,8 @@ class Plenary(object):
         if self.year < 2000:
             self.year = self.year + 2000
         return DATE_TEMPLATE.format(month=self.month, thurs=self.thursday_date, friday=self.friday_date, year=self.year)
+
+    @property
+    def two_digit_year(self):
+        if self.year > 2000:
+            return self.year - 2000

@@ -14,3 +14,7 @@ class Resolution(object):
         self.document_id = document_id
         self.title = title
         self.number = number
+
+    @property
+    def name(self):
+        return self.title

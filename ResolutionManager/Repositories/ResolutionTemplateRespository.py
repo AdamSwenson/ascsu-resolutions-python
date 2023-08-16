@@ -18,12 +18,13 @@ class ResolutionTemplateRepository(object):
         self.cred_manager = CredentialsManager()
         self.service = build('docs', 'v1', credentials=self.cred_manager.creds)
 
-    def update_title(self, document_id, title):
+    def update_title(self, resolution ):
+        # def update_title(self, document_id, title):
         title_idxs = {'start_index': 54, 'end_index': 62}
         rez_number = {'start_index': 54, 'end_index': 62}
 
         title_start = title_idxs['start_index'] - 1
-        title_end = title_idxs['start_index'] + len(title)
+        title_end = title_idxs['start_index'] + len(resolution.title)
 
 
         # Make sure to order backwards so offsets don't change
@@ -33,7 +34,7 @@ class ResolutionTemplateRepository(object):
                     'location': {
                         'index': title_start,
                     },
-                    'text': title
+                    'text': resolution.title
 
                 }
             },
@@ -74,7 +75,7 @@ class ResolutionTemplateRepository(object):
         ]
 
         result = self.service.documents().batchUpdate(
-            documentId=document_id, body={'requests': requests}).execute()
+            documentId=resolution.document_id, body={'requests': requests}).execute()
 
         return result
 
@@ -92,19 +93,24 @@ class ResolutionTemplateRepository(object):
         return resolution
 
 
-    def make_header(self, resolution_number, year, committee, cosponsors=[]):
-        if year > 2000:
-            year = year - 2000
+    def make_header(self, resolution):
+        # def make_header(self, resolution_number, year, committee, cosponsors=[]):
 
-        v = HEADER_TEMPLATE.format(resolution_number=resolution_number, year=year, committee=committee.abbreviation)
-        if len(cosponsors) > 0:
-            for c in cosponsors:
-                v += f"/{c.abbreviations}"
+        # if self.plenary.year > 2000:
+        #     self.plenary.year = self.plenary.year - 2000
+
+        v = HEADER_TEMPLATE.format(resolution_number=resolution.number, year=self.plenary.two_digit_year, committee=resolution.committee.abbreviation)
+        if len(resolution.cosponsors) > 0:
+            for c in resolution.cosponsors:
+                v += f"/{c.abbreviation}"
         return v
 
 
-    def update_header(self, document_id, resolution_number, committee, cosponsors=[]):
-        txt = f"{self.make_header(resolution_number, self.plenary.year, committee, cosponsors)}\n{self.plenary.formatted_plenary_date()}"
+
+    def update_header(self, resolution):
+        # def update_header(self, document_id, resolution_number, committee, cosponsors=[]):
+        txt = f"{self.make_header(resolution)}\n{self.plenary.formatted_plenary_date()}"
+        # txt = f"{self.make_header(resolution.number, self.plenary.year, resolution.committee, resolution.cosponsors)}\n{self.plenary.formatted_plenary_date()}"
 
         requests = [{
             "insertText": {
@@ -127,7 +133,7 @@ class ResolutionTemplateRepository(object):
         # ]
 
         result = self.service.documents().batchUpdate(
-            documentId=document_id, body={'requests': requests}).execute()
+            documentId=resolution.document_id, body={'requests': requests}).execute()
 
         print(result)
 

@@ -1,12 +1,4 @@
-
-from ResolutionManager import environment as env
-from ResolutionManager.API.CredentialsManager import CredentialsManager
-from ResolutionManager.Repositories.DocumentRepository import DocumentRepository
-from ResolutionManager.Repositories.FileRepository import FileRepository
-from ResolutionManager.Repositories.ResolutionTemplateRespository import ResolutionTemplateRepository
-import ResolutionManager.executables.make_folders_for_plenary as make_folders
-import ResolutionManager.executables.copy_first_readings_for_feedback as copy_first_reads
-import ResolutionManager.executables.create_resolution_from_template as create_resolution
+import create_resolution_from_template as create_resolution
 # import environment as env
 
 def print_hi(name):

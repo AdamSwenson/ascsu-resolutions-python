@@ -44,29 +44,35 @@ class FileRepository(object):
     def list_folders(self):
         pass
 
-    def list_files(self, folder_id=None, page_size=10):
+    def list_files(self, folder_id=None, page_size=100):
         """Shows basic usage of the Drive v3 API.
         Prints the names and ids of the first 10 files the user has access to.
 
         If folder_id is not None, lists the files from that folder
 
+        todo Pagination must be enabled!
+
+        todo Needs to filter out trashed files
+
         Returns : List of result objects
         """
         try:
-            # Call the Drive v3 API
-            # results = self.service.files().list(
-            #     pageSize=page_size, fields="nextPageToken, files(id, name)").execute()
-            #
+            if folder_id is not None:
+                query = f"'{folder_id}' in parents and trashed = false"
+            else:
+                query = f"trashed = false"
+
             results = self.service.files().list(
+                q=query,
                 pageSize=page_size,
                 fields="nextPageToken, files(id, name, mimeType, parents)",
             ).execute()
-            # print(results)
 
             items = results.get('files', [])
+            # print(items[0]['parents'])
 
             if folder_id is not None:
-                items = [f for f in items if folder_id in f['parents']]
+                items = [f for f in items if 'parents' in f and folder_id in f['parents']]
 
             if not items:
                 print('No files found.')

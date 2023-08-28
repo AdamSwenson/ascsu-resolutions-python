@@ -1,9 +1,9 @@
 import ResolutionManager.environment as env
 from ResolutionManager.Repositories.DocumentRepository import DocumentRepository
 from ResolutionManager.Repositories.FileRepository import FileRepository
-
+from ResolutionManager.Repositories.ResolutionRepository import ResolutionRepository
 from ResolutionManager.API.CredentialsManager import CredentialsManager
-
+import sys
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -11,11 +11,14 @@ HEADER_TEMPLATE = "AS-{resolution_number}-{year}/{committee}"
 
 class ResolutionTemplateRepository(object):
 
-    def __init__(self, plenary=None):
+    def __init__(self, plenary=None, dao=None):
+        self.dao = dao
         self.plenary = plenary
         self.doc_repo = DocumentRepository()
         self.file_repo = FileRepository()
         self.cred_manager = CredentialsManager()
+        self.resolution_repo = ResolutionRepository(dao)
+
         self.service = build('docs', 'v1', credentials=self.cred_manager.creds)
 
     def update_title(self, resolution ):
@@ -87,7 +90,10 @@ class ResolutionTemplateRepository(object):
         """
         filename = env.RESOLUTION_FILENAME_TEMPLATE.format(resolution_number=resolution.number,
                                                            resolution_name=resolution.title)
+        sys.stdout.write(f"{resolution.__dict__}")
+
         resolution.document_id = self.file_repo.copy_file(template_id, filename)
+        self.resolution_repo.set_google_document_id(resolution, resolution.document_id)
 
         self.file_repo.move_file_to_folder(resolution.document_id, self.plenary.first_reading_folder_id)
         return resolution
@@ -109,7 +115,7 @@ class ResolutionTemplateRepository(object):
 
     def update_header(self, resolution):
         # def update_header(self, document_id, resolution_number, committee, cosponsors=[]):
-        txt = f"{self.make_header(resolution)}\n{self.plenary.formatted_plenary_date()}"
+        txt = f"{self.make_header(resolution)}\n{self.plenary.formatted_plenary_date}"
         # txt = f"{self.make_header(resolution.number, self.plenary.year, resolution.committee, resolution.cosponsors)}\n{self.plenary.formatted_plenary_date()}"
 
         requests = [{

@@ -1,3 +1,7 @@
+import sys
+sys.path.append("/Users/ars62917/Dropbox/ResolutionManager")
+
+
 from ResolutionManager.Repositories.FileRepository import FileRepository
 import ResolutionManager.environment as env
 from ResolutionManager.DAO.DAO import MySqlDao
@@ -9,11 +13,15 @@ FIRST_READING_FOLDER_NAME = 'First reading'
 ACTION_FOLDER_NAME = 'Action items'
 
 
-def main(plenary):
+def main(plenary_id=None):
+    if plenary_id is None:
+        plenary_id = int(sys.argv[1])
+
     file_repo = FileRepository()
     # Load from database
     dao = MySqlDao()
     plenary_repo = PlenaryRepository(dao)
+    plenary = plenary_repo.load_plenary(plenary_id)
 
     # todo Check if folder already exists
     plenary_folder_name = plenary.plenary_folder_name

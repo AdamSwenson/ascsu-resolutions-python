@@ -1,18 +1,21 @@
+import datetime
 
 PLENARY_FOLDER_TEMPLATE = "{year} {month}"
 DATE_TEMPLATE = "{month}, {thurs}-{friday} {year}"
 
 class Plenary(object):
 
-    def __init__(self, thursday_date=None,  first_reading_folder_id=None,
+    def __init__(self, id=None, thursday_date=None,  first_reading_folder_id=None,
                  plenary_folder_id=None, feedback_folder_id=None, second_reading_folder_id=None):
 
         # def __init__(self, year, month, thursday_date=None, friday_date=None, first_reading_folder_id=None, plenary_folder_id=None, feedback_folder_id=None, second_reading_folder_id=None):
+        self.id = id
         self.second_reading_folder_id = second_reading_folder_id
         self.feedback_folder_id = feedback_folder_id
         self.plenary_folder_id = plenary_folder_id
         self.first_reading_folder_id = first_reading_folder_id
-        self.thursday_date = thursday_date
+        self.thursday_date = datetime.datetime.strptime(thursday_date, '%Y-%m-%d').date() if isinstance(thursday_date, str) else thursday_date
+        # self.thursday_date = datetime.datetime(thursday_date)
         # self.month = month
         # self.year = year
         # self.friday_date = friday_date
